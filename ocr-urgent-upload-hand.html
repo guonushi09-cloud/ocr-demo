@@ -62,7 +62,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 36px 16px 36px;
+    padding: 0 18px 16px 18px;
     z-index: 10;
   }
 
@@ -109,8 +109,8 @@
   /* 小手在按钮右侧做上下浮动，食指尖始终朝向按钮 */
   @keyframes hand-float {
     0%   { transform: translate(0px,    0px);   }
-    40%  { transform: translate(-10px, -10px);  }
-    70%  { transform: translate(-10px, -10px);  }
+    40%  { transform: translate(-10px, -16px);  }
+    70%  { transform: translate(-10px, -16px);  }
     100% { transform: translate(0px,    0px);   }
   }
 
@@ -157,7 +157,7 @@
   .hand-ripple2 {
     position: absolute;
     top: 50%;
-    left: 239px;
+    left: 260px;
     width: 32px;
     height: 32px;
     margin-top: -16px;
