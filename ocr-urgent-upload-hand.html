@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紧急提示 · 补齐信息（小手版）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: #E8E8E8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 0;
+  }
+
+  /* ===== 手机外壳（去掉黑色框，直接展示屏幕内容） ===== */
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .phone-frame::before,
+  .phone-frame::after { display: none; }
+
+  /* ===== 屏幕 ===== */
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+  }
+
+  /* ===== 背景截图 ===== */
+  .bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    object-position: top center;
+  }
+
+  /* ===== 底部按钮区 ===== */
+  .btn-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 16px;
+    z-index: 10;
+  }
+
+  /* ===== 呼吸动画 ===== */
+  @keyframes btn-breathe {
+    0%   { transform: scale(1.00); }
+    50%  { transform: scale(1.08); }
+    100% { transform: scale(1.00); }
+  }
+
+  /* ===== 扫光动画 ===== */
+  @keyframes btn-shimmer {
+    0%   { left: -40%; opacity: 1; }
+    30%  { left: 110%; opacity: 1; }
+    31%  { left: 110%; opacity: 0; }
+    100% { left: -40%; opacity: 0; }
+  }
+
+  /* ===== 主按钮 ===== */
+  .upload-btn {
+    width: 299px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #FFE74D 0%, #FFDD00 100%);
+    border: none;
+    border-radius: 999px;
+    font-family: "PingFang SC", -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #111111;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    will-change: transform;
+  }
+
+  .upload-btn::after { display: none; }
+
+  /* ===== 小手上下移动动画 ===== */
+  /* 小手在按钮右侧做上下浮动，食指尖始终朝向按钮 */
+  @keyframes hand-float {
+    0%   { transform: translate(0px,    0px);   }
+    40%  { transform: translate(-10px, -10px);  }
+    70%  { transform: translate(-10px, -10px);  }
+    100% { transform: translate(0px,    0px);   }
+  }
+
+  /* 白色圆圈点击反馈
+     整个 keyframes 周期 = 1.4s（与小手完全同步）
+     0~40%  = 0~0.56s：圆圈不可见，等待小手按下
+     40%    = 0.56s：小手触底，圆圈从小变大开始扩散
+     40~76% = 0.56~1.06s：0.5s内快速扩散并消失
+     76~100%= 1.06~1.4s：保持不可见，等待下一次按下 */
+  @keyframes ripple {
+    0%    { transform: scale(0.1); opacity: 0;   }
+    40%   { transform: scale(0.1); opacity: 0;   }
+    41%   { transform: scale(0.1); opacity: 0.9; }
+    76%   { transform: scale(3.0); opacity: 0;   }
+    100%  { transform: scale(3.0); opacity: 0;   }
+  }
+
+  /* 小手容器：食指尖对准按钮右侧，最顶层 */
+  .hand-wrap {
+    position: absolute;
+    right: -4px;
+    bottom: -38px;
+    width: 140px;
+    height: 140px;
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  /* 小手图片：整体上下浮动 */
+  .hand-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: hand-float 1.4s ease-in-out infinite;
+  }
+
+  /* 白色圆圈：在按钮内部，食指尖对应的按钮内坐标
+     按钮宽299px，食指尖距按钮右边约 60px → left = 299-60 = 239px
+     垂直居中 → top = 50% = 24px，圆圈尺寸32px，偏移 -16px → top:8px
+     层级：z-index:2 在按钮文字之上 */
+  .hand-ripple,
+  .hand-ripple2 {
+    position: absolute;
+    top: 50%;
+    left: 239px;
+    width: 32px;
+    height: 32px;
+    margin-top: -16px;
+    margin-left: -16px;
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+    transform-origin: center center;
+  }
+  .hand-ripple {
+    background: rgba(255, 255, 255, 0.85);
+    /* 周期与小手完全一致：1.4s，无delay，keyframes内部控制触发时机 */
+    animation: ripple 1.4s linear 0s infinite;
+  }
+  .hand-ripple2 {
+    background: rgba(255, 255, 255, 0.5);
+    /* 第二圈稍微错开一点，增加层次感 */
+    animation: ripple 1.4s linear 0.08s infinite;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-screen">
+
+    <!-- 背景截图铺满 -->
+    <img class="bg-image" src="ocr-bg.png" alt="背景">
+
+    <!-- 底部按钮区 -->
+    <div class="btn-layer">
+      <!-- 白圈在按钮内部，overflow:hidden 裁切，不超出按钮边界 -->
+      <button class="upload-btn">
+        立即上传
+        <div class="hand-ripple"></div>
+        <div class="hand-ripple2"></div>
+      </button>
+
+      <!-- 小手：最顶层，覆盖在按钮之上 -->
+      <div class="hand-wrap">
+        <img class="hand-img" src="hand.png" alt="点击">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

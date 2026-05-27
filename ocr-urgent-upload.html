@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紧急提示 · 补齐信息</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: #E8E8E8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 0;
+  }
+
+  /* ===== 手机外壳（去掉黑色框） ===== */
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .phone-frame::before,
+  .phone-frame::after { display: none; }
+
+  /* ===== 屏幕 ===== */
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+  }
+
+  /* ===== 背景截图：铺满整个屏幕 ===== */
+  .bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    object-position: top center;
+  }
+
+  /* ===== 底部按钮区：绝对定位贴底，高度固定 ===== */
+  .btn-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 16px;
+    z-index: 10;             /* 确保在背景图上方 */
+  }
+
+  /* ===== 呼吸动画 ===== */
+  @keyframes btn-breathe {
+    0%   { transform: scale(1.00); }
+    50%  { transform: scale(1.08); }
+    100% { transform: scale(1.00); }
+  }
+
+  /* ===== 扫光动画 ===== */
+  @keyframes btn-shimmer {
+    0%   { left: -40%; opacity: 1; }
+    30%  { left: 110%; opacity: 1; }
+    31%  { left: 110%; opacity: 0; }
+    100% { left: -40%; opacity: 0; }
+  }
+
+  /* ===== 主按钮 ===== */
+  .upload-btn {
+    /* scale(1.08)最大时宽=323px(两侧各留16px)，基础宽=323/1.08≈299px */
+    width: 299px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #FFE74D 0%, #FFDD00 100%);
+    border: none;
+    border-radius: 999px;
+    font-family: "PingFang SC", -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #111111;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    /* 呼吸：在自身中心原地缩放 */
+    transform-origin: 50% 50%;
+    animation: btn-breathe 1.2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* 扫光光条 */
+  .upload-btn::after {
+    content: '';
+    position: absolute;
+    top: -15%;
+    left: -40%;
+    width: 25%;
+    height: 130%;
+    background: linear-gradient(
+      100deg,
+      rgba(255,255,255,0)   0%,
+      rgba(255,255,255,0.5) 40%,
+      rgba(255,255,255,0.7) 50%,
+      rgba(255,255,255,0.5) 60%,
+      rgba(255,255,255,0)  100%
+    );
+    transform: skewX(-20deg);
+    animation: btn-shimmer 1.6s linear infinite;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-screen">
+
+    <!-- 背景截图铺满 -->
+    <img class="bg-image" src="ocr-bg.png" alt="背景">
+
+    <!-- 底部按钮区，固定高度贴底 -->
+    <div class="btn-layer">
+      <button class="upload-btn">立即上传</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
